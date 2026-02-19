@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LORE — The Behavioral Intelligence Layer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=IBM+Plex+Mono:wght@300;400;500&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080808;
+      --fg: #f0ede6;
+      --muted: #6b6760;
+      --accent: #c8b89a;
+      --accent2: #e8d5b7;
+      --line: rgba(240,237,230,0.1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'EB Garamond', Georgia, serif;
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 999;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    }
+
+    .progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 1px;
+      background: var(--accent);
+      z-index: 1000;
+      width: 0%;
+      transition: width 0.1s linear;
+    }
+
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.6rem 2.5rem;
+      background: linear-gradient(to bottom, rgba(8,8,8,0.95) 0%, transparent 100%);
+    }
+
+    .nav-logo {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    .nav-right {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .chapter {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 8rem 2.5rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero {
+      min-height: 100vh;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 2.5rem 5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .hero-eyebrow {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 9vw, 7rem);
+      font-weight: 900;
+      line-height: 0.98;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-title em { font-style: italic; color: var(--accent); }
+
+    .hero-byline {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 3rem;
+    }
+
+    h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      font-weight: 700;
+      line-height: 1.12;
+      letter-spacing: -0.01em;
+      margin-bottom: 1.5rem;
+    }
+
+    h2 em { font-style: italic; color: var(--accent); }
+
+    .label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 2rem;
+      display: block;
+    }
+
+    .body-text {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.2rem;
+      line-height: 1.85;
+      color: rgba(240,237,230,0.82);
+    }
+
+    .body-text + .body-text { margin-top: 1.1rem; }
+
+    .standout {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.5rem, 3.5vw, 2.3rem);
+      font-style: italic;
+      color: var(--accent2);
+      line-height: 1.4;
+      margin: 2.2rem 0;
+    }
+
+    blockquote {
+      font-family: 'EB Garamond', serif;
+      font-size: 1.35rem;
+      font-style: italic;
+      color: var(--fg);
+      line-height: 1.6;
+    }
+
+    blockquote cite {
+      display: block;
+      margin-top: 1.2rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-style: normal;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .divider {
+      width: 100%;
+      height: 1px;
+      background: var(--line);
+      margin: 2.5rem 0;
+    }
+
+    /* VISUALS */
+    .vis-grid {
+      height: 360px;
+      background: #0d0d0d;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      gap: 1px;
+      margin: 2.5rem 0;
+    }
+
+    .vis-grid span {
+      background: rgba(200,184,154,0.05);
+      animation: gp var(--d,3s) var(--dl,0s) ease-in-out infinite alternate;
+    }
+
+    @keyframes gp { to { background: rgba(200,184,154,0.2); } }
+
+    .vis-wave {
+      height: 280px;
+      background: #0a0a0a;
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      margin: 2.5rem 0;
+    }
+
+    .vis-wave svg { width: 100%; height: 100%; }
+
+    .vis-map {
+      height: 340px;
+      background: radial-gradient(ellipse at 65% 35%, rgba(200,184,154,0.07) 0%, transparent 65%), #0b0b0b;
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+      margin: 2.5rem 0;
+    }
+
+    .vis-map::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 30px, rgba(200,184,154,0.025) 30px, rgba(200,184,154,0.025) 31px),
+        repeating-linear-gradient(90deg, transparent, transparent 30px, rgba(200,184,154,0.025) 30px, rgba(200,184,154,0.025) 31px);
+    }
+
+    .node {
+      position: absolute;
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: nb var(--d,2s) var(--dl,0s) ease-in-out infinite alternate;
+    }
+
+    @keyframes nb { to { opacity: 0.08; transform: scale(0.4); } }
+
+    .vis-quote {
+      background: #0e0e0e;
+      border-left: 1px solid var(--accent);
+      padding: 3rem 2.5rem;
+      margin: 2.5rem 0;
+    }
+
+    .vis-term {
+      height: 240px;
+      background: #060606;
+      border: 1px solid rgba(200,184,154,0.1);
+      padding: 2rem;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+      overflow: hidden;
+      margin: 2.5rem 0;
+    }
+
+    .tline {
+      margin-bottom: 0.4rem;
+      animation: tr 0.3s var(--dl,0s) both;
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 7px; height: 1em;
+      background: var(--accent);
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+
+    @keyframes tr   { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .vis-particles {
+      height: 320px;
+      background: #080808;
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+      margin: 2.5rem 0;
+    }
+
+    .pdot {
+      position: absolute;
+      width: 2px; height: 2px;
+      border-radius: 50%;
+      background: var(--accent2);
+      animation: pm var(--d,8s) var(--dl,0s) linear infinite;
+      opacity: 0;
+    }
+
+    @keyframes pm {
+      0%   { opacity: 0; transform: translate(0,0) scale(1); }
+      10%  { opacity: 0.7; }
+      90%  { opacity: 0.4; }
+      100% { opacity: 0; transform: translate(var(--tx,100px), var(--ty,50px)) scale(2.5); }
+    }
+
+    .ca-block {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      padding: 1.6rem 2rem;
+      border: 1px solid rgba(200,184,154,0.15);
+      background: rgba(200,184,154,0.02);
+      margin-top: 1.5rem;
+    }
+
+    .ca-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .ca-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.82rem;
+      color: var(--accent2);
+      letter-spacing: 0.06em;
+      word-break: break-all;
+    }
+
+    footer {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2.5rem;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    footer span {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
+      color: var(--muted);
+    }
+
+    @media (max-width: 600px) {
+      nav, .hero, .chapter, footer { padding-left: 1.4rem; padding-right: 1.4rem; }
+      footer { flex-direction: column; gap: 0.8rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="progress-bar" id="pb"></div>
+
+<nav>
+  <a class="nav-logo" href="#">LORE</a>
+  <span class="nav-right">on Solana</span>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">LORE — on building</p>
+  <h1 class="hero-title">The Behavioral<br/><em>Intelligence</em><br/>Layer</h1>
+  <p class="hero-byline">a story by lore</p>
+</div>
+
+<!-- 01 -->
+<div class="chapter">
+  <span class="label">01 — origin</span>
+  <div class="vis-grid" id="grid"></div>
+  <p class="body-text">we scaled a suite of AI products to a $2M run rate in 7 months, operating lean, operating fast.</p>
+</div>
+
+<!-- 02 -->
+<div class="chapter">
+  <span class="label">02 — the insight</span>
+  <p class="body-text">we didn't win because we out-engineered the competition.</p>
+  <p class="standout">we won because we understood people better than anyone else in the room.</p>
+  <p class="body-text">and that understanding came from somewhere most builders ignore entirely.</p>
+</div>
+
+<!-- 03 -->
+<div class="chapter">
+  <span class="label">03 — the problem</span>
+  <div class="vis-wave">
+    <svg viewBox="0 0 600 200" preserveAspectRatio="none">
+      <polyline points="0,100 40,90 80,110 100,60 130,140 160,80 200,120 240,70 280,100 310,50 350,130 390,85 430,115 470,60 500,140 540,90 600,100"
+        fill="none" stroke="rgba(200,184,154,0.5)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <polyline points="0,100 60,103 120,97 180,101 240,99 300,102 360,98 420,101 480,99 540,102 600,100"
+        fill="none" stroke="rgba(200,184,154,0.12)" stroke-width="1" stroke-dasharray="4 4"/>
+    </svg>
+  </div>
+  <h2>AI has changed everything.<br/><em>except human nature.</em></h2>
+  <p class="body-text">raw intelligence is abundant now. models are commodities. the moat is no longer what you can compute — it's what you can <em style="color:var(--accent)">comprehend.</em></p>
+</div>
+
+<!-- 04 -->
+<div class="chapter">
+  <span class="label">04 — the gap</span>
+  <p class="body-text">great products don't come from benchmarks.</p>
+  <p class="body-text">they come from knowing why someone opens an app at 11pm. what makes them forward a link without reading it. what makes them trust a stranger.</p>
+  <div class="divider"></div>
+  <p class="standout">behavioral context.<br/>emotional texture.<br/>what some people call <em>signal.</em></p>
+  <p class="body-text">most builders are blind to it. they optimize for outputs. we optimize for understanding.</p>
+</div>
+
+<!-- 05 -->
+<div class="chapter">
+  <span class="label">05 — the architecture</span>
+  <div class="vis-map" id="nodeMap"></div>
+  <p class="body-text">so we built differently. instead of one monolithic model trying to understand everyone, we built a lattice.</p>
+  <p class="body-text">thousands of fine-grained agents, each one anchored to a distinct behavioral archetype — a way of moving through the world.</p>
+</div>
+
+<!-- 06 -->
+<div class="chapter">
+  <span class="label">06 — how it works</span>
+  <div class="vis-term">
+    <div class="tline" style="--dl:0.3s">$ initializing LORE behavioral mesh...</div>
+    <div class="tline" style="--dl:0.9s"><span style="color:var(--muted)">→</span> loading archetype cluster [urban_early_adopter]</div>
+    <div class="tline" style="--dl:1.5s"><span style="color:var(--muted)">→</span> loading archetype cluster [suburban_optimizer]</div>
+    <div class="tline" style="--dl:2.1s"><span style="color:var(--muted)">→</span> cross-referencing 847,223 behavioral signals</div>
+    <div class="tline" style="--dl:2.7s"><span style="color:var(--muted)">→</span> distilling intent patterns... <span style="color:#6abf69">done</span></div>
+    <div class="tline" style="--dl:3.3s">$ ready. <span class="cursor"></span></div>
+  </div>
+  <p class="body-text">each agent lives inside a behavioral fingerprint. it knows not just what people do — but why. the anxieties behind a search. the aspiration behind a purchase.</p>
+  <p class="body-text">they don't analyze users. they <em style="color:var(--accent)">embody</em> them.</p>
+</div>
+
+<!-- 07 -->
+<div class="chapter">
+  <span class="label">07 — the edge</span>
+  <div class="vis-particles" id="particles"></div>
+  <p class="body-text">we're not building smarter AI. we're building AI that understands what smart means to a specific person at a specific moment.</p>
+  <div class="divider"></div>
+  <p class="standout">our edge is simple: we're scaling<br/><em>hypercontextual understanding.</em></p>
+</div>
+
+<!-- 08 -->
+<div class="chapter">
+  <span class="label">08 — on the work</span>
+  <div class="vis-quote">
+    <blockquote>
+      "Any sufficiently advanced understanding of humans is indistinguishable from empathy."
+      <cite>— adapted from Clarke</cite>
+    </blockquote>
+  </div>
+  <p class="body-text">that's what we're building. not a smarter model. a more human-aware one.</p>
+  <p class="body-text">and now we're bringing it into the world.</p>
+</div>
+
+<!-- 09 COMING SOON -->
+<div class="chapter">
+  <span class="label">09 — launch</span>
+  <h2><em>coming</em><br/>soon.</h2>
+  <p class="body-text">something is being set in motion. the behavioral intelligence layer is arriving on Solana.</p>
+  <div class="divider"></div>
+  <div class="ca-block">
+    <span class="ca-label">CA:</span>
+    <span class="ca-value">TBA</span>
+  </div>
+</div>
+
+<footer>
+  <span>© 2025 LORE</span>
+  <span>on Solana</span>
+</footer>
+
+<script>
+  // Progress bar
+  const pb = document.getElementById('pb');
+  window.addEventListener('scroll', () => {
+    pb.style.width = (window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100) + '%';
+  });
+
+  // Grid cells
+  const grid = document.getElementById('grid');
+  for (let i = 0; i < 32; i++) {
+    const s = document.createElement('span');
+    s.style.cssText = `--d:${2+Math.random()*3}s;--dl:${Math.random()*2}s`;
+    grid.appendChild(s);
+  }
+
+  // Node map
+  const nm = document.getElementById('nodeMap');
+  for (let i = 0; i < 55; i++) {
+    const n = document.createElement('div');
+    n.className = 'node';
+    n.style.cssText = `left:${Math.random()*94}%;top:${Math.random()*88}%;--d:${2+Math.random()*4}s;--dl:${Math.random()*3}s`;
+    nm.appendChild(n);
+  }
+
+  // Particles
+  const pf = document.getElementById('particles');
+  for (let i = 0; i < 90; i++) {
+    const d = document.createElement('div');
+    d.className = 'pdot';
+    const tx = (Math.random()-.5)*700, ty = (Math.random()-.5)*500;
+    d.style.cssText = `left:${15+Math.random()*70}%;top:${15+Math.random()*70}%;--d:${6+Math.random()*9}s;--dl:${Math.random()*7}s;--tx:${tx}px;--ty:${ty}px`;
+    pf.appendChild(d);
+  }
+</script>
+</body>
+</html>
